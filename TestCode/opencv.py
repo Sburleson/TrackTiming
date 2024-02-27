@@ -6,7 +6,6 @@ import numpy as np
 ##Take each frame from video, detect track lanes and set finish line.
 ##
 
-
 def filter_horizontal_lines(lines):
     horizontal_lines = []
     for line in lines:
@@ -23,47 +22,76 @@ def filter_horizontal_lines(lines):
 
     return horizontal_lines
 
+def detect_lines(frame):
 
-path = 'track.jpg'
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    cv2.imshow('Grayscale Image', gray)
+    cv2.waitKey(0)
 
-image = cv2.imread(path)
+     # Apply GaussianBlur to reduce noise and help the algorithm
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
-cv2.imshow('Original Image', image)
-cv2.waitKey(0)
+     # Use Canny edge detector to find edges in the image
+    edges = cv2.Canny(blur, 20, 100)
 
-# Convert the image to grayscale
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # Use Hough Line Transform to detect lines in the image
+    lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=100, minLineLength=100, maxLineGap=50)
 
-# Display the grayscale image
-##cv2.imshow('Grayscale Image', gray)
-##cv2.waitKey(0)
+    # Draw the lines on the original image
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-# Apply GaussianBlur to reduce noise and help the algorithm
-blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    # Display the final result
+    cv2.imshow('Lines Detected', frame)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-# Display the blurred image
-##cv2.imshow('Blurred Image', blur)
-##cv2.waitKey(0)
 
-# Use Canny edge detector to find edges in the image
-edges = cv2.Canny(blur, 20, 100)
+def original(path):
 
-# Display the edges
-cv2.imshow('Edges Detected', edges)
-cv2.waitKey(0)
+    image = cv2.imread(path)
 
-# Use Hough Line Transform to detect lines in the image
-lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=10, minLineLength=60, maxLineGap=15)
+    cv2.imshow('Original Image', image)
+    cv2.waitKey(0)
 
-# Draw the lines on the original image
-for line in lines:
-    x1, y1, x2, y2 = line[0]
-    cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# Display the final result
-cv2.imshow('Lines Detected', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-print(lines)
-horizontal = filter_horizontal_lines(lines)
-#print("Horizontal:", filter_horizontal_lines(lines))
+    # Display the grayscale image
+    ##cv2.imshow('Grayscale Image', gray)
+    ##cv2.waitKey(0)
+
+    # Apply GaussianBlur to reduce noise and help the algorithm
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Display the blurred image
+    ##cv2.imshow('Blurred Image', blur)
+    ##cv2.waitKey(0)
+
+    # Use Canny edge detector to find edges in the image
+    edges = cv2.Canny(blur, 20, 100)
+
+    # Display the edges
+    cv2.imshow('Edges Detected', edges)
+    cv2.waitKey(0)
+
+    # Use Hough Line Transform to detect lines in the image
+    lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=15, minLineLength=100, maxLineGap=5)
+
+    # Draw the lines on the original image
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+    # Display the final result
+    cv2.imshow('Lines Detected', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    print(lines)
+    horizontal = filter_horizontal_lines(lines)
+    #print("Horizontal:", filter_horizontal_lines(lines))
+
+path = 'YOLOtest1.PNG'
+#original(path)
