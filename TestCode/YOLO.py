@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+from opencv import detect_lines
 
 # Load YOLO
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,10 +12,10 @@ config_path = os.path.join(current_dir, "yolov3.cfg")
 net = cv2.dnn.readNet(weights_path,config_path)
 output_layers = net.getUnconnectedOutLayersNames()
 
-cap = cv2.VideoCapture("race_trimmed.mp4")
+cap = cv2.VideoCapture("100mtest.mp4")
 
 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-skip_frames = int(total_frames / 1.2)
+skip_frames = int(total_frames / 1.08)
 cap.set(cv2.CAP_PROP_POS_FRAMES, skip_frames)
 while True:
     # Read a frame from the video
@@ -27,7 +28,7 @@ while True:
     # Do something with the frame (e.g., display or process)
 
     # Display the frame (optional)
-    cv2.imshow('Frame', frame)
+    #cv2.imshow('Frame', frame)
     # Load image
     ##image = cv2.imread("runnerobj.jpg")  # Replace with your image path
     height, width, channels = frame.shape
@@ -78,7 +79,8 @@ while True:
 
     # Display the result
     cv2.imshow("YOLO Person Detection", frame)
+
+    detect_lines(frame)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    print(outs[0][0])
